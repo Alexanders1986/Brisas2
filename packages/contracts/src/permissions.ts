@@ -14,6 +14,7 @@ export const PERMISSIONS = {
   'properties.manage': 'Crear y editar torres, unidades, parqueaderos y depósitos',
   'residents.read': 'Ver residentes y sus vinculaciones',
   'residents.manage': 'Registrar, editar y dar o quitar acceso a residentes',
+  'household.manage_own': 'Registrar las personas y los vehículos de su propia unidad',
   'documents.read': 'Consultar documentos institucionales habilitados',
   'documents.manage': 'Subir, reemplazar y archivar documentos',
   'announcements.read': 'Ver comunicados publicados',
@@ -75,6 +76,7 @@ export const STAFF_ROLES: readonly RoleKey[] = [
 ];
 
 const RESIDENT_BASE: PermissionKey[] = [
+  'household.manage_own',
   'documents.read',
   'announcements.read',
   'projects.read',

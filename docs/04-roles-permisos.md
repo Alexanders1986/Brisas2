@@ -33,6 +33,7 @@ cada ruta y la web lo usa solo para decidir qué mostrar.
 | `properties.manage` Editar torres y unidades | ✔ | | | | | | |
 | `residents.read` Ver residentes | ✔ | ✔ | | | | | |
 | `residents.manage` Registrar y dar acceso | ✔ | | | | | | |
+| `household.manage_own` Registrar su hogar y vehículos | ✔ | | | | ✔ | ✔ | ✔ |
 | `documents.read` Consultar documentos | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
 | `documents.manage` Administrar documentos | ✔ | | | | | | |
 | `announcements.read` Ver comunicados | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ | ✔ |
@@ -53,6 +54,19 @@ cada ruta y la web lo usa solo para decidir qué mostrar.
 Propietario, arrendatario y residente comparten hoy los mismos permisos; son roles distintos
 para que los documentos y comunicados puedan dirigirse a uno solo de ellos
 (`institutional_documents.visible_to_roles`, `announcement_audiences`).
+
+## Permisos que dependen del recurso
+
+Algunos permisos no bastan por sí solos: el servidor comprueba además la relación de quien
+llama con el recurso.
+
+| Acción | Quién puede |
+| --- | --- |
+| Ver o editar el hogar y los vehículos de una unidad | Quien tiene una vinculación vigente en esa unidad (`household.manage_own`) o el personal con `residents.manage`. `residents.read` permite solo ver. |
+| Ver una PQR | Quien la radicó (`pqr.read_own`) o el personal con `pqr.read_all`. Una PQR ajena responde 404. |
+| Escribir en la conversación | Quien la radicó, o quien puede gestionarla. |
+| Cambiar estado o prioridad, escribir notas internas | `pqr.manage`, o `pqr.manage_assigned` si la PQR está asignada a quien llama. |
+| Asignar responsable | Solo `pqr.manage`. |
 
 ## Rol que recibe un residente
 

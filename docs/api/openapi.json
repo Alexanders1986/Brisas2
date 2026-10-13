@@ -1531,6 +1531,931 @@
           "Residentes"
         ]
       }
+    },
+    "/api/v1/tenants/{tenantId}/my/household": {
+      "get": {
+        "operationId": "HouseholdController_mine",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mis unidades con las personas y los vehículos registrados en cada una",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/household": {
+      "get": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_get",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Personas y vehículos de una unidad",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/household-members": {
+      "post": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_addMember",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Agregar una persona que vive en la unidad",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/household-members/{memberId}": {
+      "put": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_updateMember",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Editar una persona del hogar",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      },
+      "delete": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_removeMember",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quitar una persona del hogar",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/vehicles": {
+      "post": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_addVehicle",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar un vehículo de la unidad",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/vehicles/{vehicleId}": {
+      "put": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_updateVehicle",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Editar un vehículo",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      },
+      "delete": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_removeVehicle",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quitar un vehículo",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/pets": {
+      "post": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_addPet",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdPetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar una mascota de la unidad",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}/pets/{petId}": {
+      "put": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_updatePet",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "petId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HouseholdPetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Editar una mascota",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      },
+      "delete": {
+        "description": "Pueden hacerlo los residentes con vinculación vigente en la unidad y el personal con permiso para gestionar residentes.",
+        "operationId": "HouseholdController_removePet",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "petId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Quitar una mascota",
+        "tags": [
+          "Hogar y vehículos"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/pqrs": {
+      "get": {
+        "description": "Con `pqr.read_all` devuelve todas las del conjunto; con `pqr.read_own`, solo las que radicó quien consulta. Filtros por estado, tipo, prioridad, torre, fechas de radicación y búsqueda por radicado, asunto o solicitante.",
+        "operationId": "PqrController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending_review",
+                "in_progress",
+                "resolved",
+                "closed"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "petition",
+                "complaint",
+                "claim",
+                "suggestion"
+              ]
+            }
+          },
+          {
+            "name": "priority",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            }
+          },
+          {
+            "name": "towerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "assignedToMe",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar PQR",
+        "tags": [
+          "PQR"
+        ]
+      },
+      "post": {
+        "description": "Genera el número de radicado (PQR-AAAA-NNNNNN) y envía la confirmación por correo.",
+        "operationId": "PqrController_create",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePqrDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "422": {
+            "description": "PROPERTY_NOT_YOURS"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Radicar una PQR",
+        "tags": [
+          "PQR"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/pqrs/assignees": {
+      "get": {
+        "operationId": "PqrController_assignees",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Personal al que se le puede asignar una PQR",
+        "tags": [
+          "PQR"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/pqrs/{pqrId}": {
+      "get": {
+        "description": "Las notas internas solo se incluyen para el personal.",
+        "operationId": "PqrController_get",
+        "parameters": [
+          {
+            "name": "pqrId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle de una PQR con su conversación e historial de estados",
+        "tags": [
+          "PQR"
+        ]
+      },
+      "patch": {
+        "description": "Requiere `pqr.manage`, o `pqr.manage_assigned` si la solicitud está asignada a quien llama.",
+        "operationId": "PqrController_update",
+        "parameters": [
+          {
+            "name": "pqrId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePqrDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "INVALID_STATUS_CHANGE"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambiar estado, prioridad o responsable",
+        "tags": [
+          "PQR"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/pqrs/{pqrId}/comments": {
+      "post": {
+        "description": "Puede escribir quien radicó la solicitud y el personal que la gestiona. La primera respuesta del personal la pasa a \"En trámite\". `isInternal` crea una nota que el residente nunca ve.",
+        "operationId": "PqrController_comment",
+        "parameters": [
+          {
+            "name": "pqrId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PqrCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "PQR_CLOSED"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Escribir en la conversación",
+        "tags": [
+          "PQR"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/reports/pqr": {
+      "get": {
+        "description": "Todos los indicadores se calculan sobre las PQR radicadas entre `from` y `to` (zona horaria del conjunto). Los tiempos promedio son en horas calendario.",
+        "operationId": "PqrController_report",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Indicadores de PQR de un periodo",
+        "tags": [
+          "PQR"
+        ]
+      }
     }
   },
   "info": {
@@ -2009,6 +2934,10 @@
                 ]
               },
               "phone": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gender": {
                 "anyOf": [
                   {
                     "type": "string",
@@ -2016,7 +2945,24 @@
                   },
                   {
                     "type": "string",
-                    "pattern": "^\\+?[\\d\\s()-]{7,20}$"
+                    "enum": [
+                      "female",
+                      "male",
+                      "other",
+                      "undisclosed"
+                    ]
+                  }
+                ]
+              },
+              "birthDate": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                   }
                 ]
               },
@@ -2054,7 +3000,8 @@
             },
             "required": [
               "firstName",
-              "lastName"
+              "lastName",
+              "phone"
             ]
           },
           "relationship": {
@@ -2195,6 +3142,10 @@
             ]
           },
           "phone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gender": {
             "anyOf": [
               {
                 "type": "string",
@@ -2202,7 +3153,24 @@
               },
               {
                 "type": "string",
-                "pattern": "^\\+?[\\d\\s()-]{7,20}$"
+                "enum": [
+                  "female",
+                  "male",
+                  "other",
+                  "undisclosed"
+                ]
+              }
+            ]
+          },
+          "birthDate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
               }
             ]
           },
@@ -2240,7 +3208,8 @@
         },
         "required": [
           "firstName",
-          "lastName"
+          "lastName",
+          "phone"
         ]
       },
       "SetResidentAccessDto": {
@@ -2265,6 +3234,312 @@
         "required": [
           "endDate"
         ]
+      },
+      "HouseholdMemberDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "kinship": {
+            "type": "string",
+            "enum": [
+              "spouse",
+              "partner",
+              "child",
+              "father",
+              "mother",
+              "sibling",
+              "grandparent",
+              "grandchild",
+              "other_relative",
+              "roommate",
+              "employee",
+              "other"
+            ]
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "female",
+              "male",
+              "other",
+              "undisclosed"
+            ]
+          },
+          "birthDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "pattern": "^\\+?[\\d\\s()-]{7,20}$"
+              }
+            ]
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "maxLength": 254
+              }
+            ]
+          },
+          "receivesNotifications": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "kinship",
+          "gender",
+          "birthDate"
+        ]
+      },
+      "VehicleDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "car",
+              "motorcycle",
+              "bicycle",
+              "scooter",
+              "other"
+            ]
+          },
+          "powertrain": {
+            "type": "string",
+            "enum": [
+              "combustion",
+              "electric",
+              "hybrid",
+              "human"
+            ]
+          },
+          "plate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "brand": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "model": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "modelYear": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "integer",
+                "minimum": 1950,
+                "maximum": 2027
+              }
+            ]
+          },
+          "color": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "kind",
+          "powertrain",
+          "color"
+        ]
+      },
+      "HouseholdPetDto": {
+        "type": "object",
+        "properties": {
+          "species": {
+            "type": "string",
+            "enum": [
+              "dog",
+              "cat",
+              "bird",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "breed": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "sex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "male",
+                  "female"
+                ]
+              }
+            ]
+          },
+          "color": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "vaccinesUpToDate": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "species",
+          "name"
+        ]
+      },
+      "CreatePqrDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "petition",
+              "complaint",
+              "claim",
+              "suggestion"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "Mantenimiento y daños",
+              "Zonas comunes",
+              "Convivencia y ruido",
+              "Seguridad y portería",
+              "Parqueaderos",
+              "Mascotas",
+              "Aseo y basuras",
+              "Administración y pagos",
+              "Otro"
+            ]
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 5000
+          },
+          "propertyId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "category",
+          "subject",
+          "description"
+        ]
+      },
+      "PqrCommentDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "isInternal": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "UpdatePqrDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending_review",
+              "in_progress",
+              "resolved",
+              "closed"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "assigneeUserId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
       }
     }
   }

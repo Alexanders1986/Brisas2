@@ -4,3 +4,6 @@ export * from './auth';
 export * from './tenants';
 export * from './structure';
 export * from './residents';
+export * from './household';
+export * from './household-pets';
+export * from './pqr';

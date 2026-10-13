@@ -6,6 +6,8 @@ import {
   type CreateResidentResponse,
   DOCUMENT_TYPES,
   DOCUMENT_TYPE_LABELS,
+  GENDERS,
+  GENDER_LABELS,
   type DuplicateCheckResponse,
   type DuplicateMatch,
   PARKING_KINDS,
@@ -42,7 +44,16 @@ const STEPS: { title: string; fields: FieldPath<Values>[] }[] = [
   { title: 'Confirmación', fields: [] },
 ];
 
-const EMPTY_PERSON = { firstName: '', lastName: '', email: '', phone: '', documentType: '' as const, documentNumber: '' };
+const EMPTY_PERSON = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  documentType: '' as const,
+  documentNumber: '',
+  gender: '' as const,
+  birthDate: '',
+};
 
 export default function NewResidentPage() {
   const tenant = useTenant();
@@ -218,8 +229,23 @@ export default function NewResidentPage() {
                         <Input {...props} type="email" autoComplete="off" {...register('person.email', { onBlur: checkDuplicate })} />
                       )}
                     </Field>
-                    <Field label="Celular" optional error={personError('phone')}>
+                    <Field label="Celular" error={personError('phone')} hint="Obligatorio: es el contacto principal de la unidad.">
                       {(props) => <Input {...props} type="tel" autoComplete="off" {...register('person.phone')} />}
+                    </Field>
+                    <Field label="Género" optional error={personError('gender')}>
+                      {(props) => (
+                        <Select {...props} {...register('person.gender')}>
+                          <option value="">Selecciona</option>
+                          {GENDERS.map((gender) => (
+                            <option key={gender} value={gender}>
+                              {GENDER_LABELS[gender]}
+                            </option>
+                          ))}
+                        </Select>
+                      )}
+                    </Field>
+                    <Field label="Fecha de nacimiento" optional error={personError('birthDate')}>
+                      {(props) => <Input {...props} type="date" min="1900-01-01" {...register('person.birthDate')} />}
                     </Field>
                     <Field label="Tipo de documento" optional error={personError('documentType')}>
                       {(props) => (

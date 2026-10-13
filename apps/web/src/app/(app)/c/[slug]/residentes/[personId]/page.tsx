@@ -3,6 +3,10 @@
 import {
   DOCUMENT_TYPES,
   DOCUMENT_TYPE_LABELS,
+  GENDERS,
+  GENDER_LABELS,
+  type PropertyHousehold,
+  ageFrom,
   type OccupancySummary,
   PARKING_KIND_LABELS,
   PET_SPECIES_LABELS,
@@ -13,11 +17,12 @@ import {
 } from '@brisas/contracts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { FileCheck2, FileClock, History, Mail, PawPrint, Pencil, Phone, SquareParking, UserX, Warehouse } from 'lucide-react';
+import { Cake, FileCheck2, FileClock, History, Mail, PawPrint, Pencil, Phone, SquareParking, UserX, Warehouse } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { type ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { HouseholdPanel } from '@/components/household-panel';
 import { AccessBadge } from '@/components/resident-bits';
 import { useTenant } from '@/components/tenant-context';
 import { Badge, Button, Card, ConfirmDialog, Dialog, EmptyState, Field, Input, PageHeader, Select, Skeleton } from '@/components/ui';
@@ -111,6 +116,15 @@ export default function ResidentDetailPage() {
             <Row icon={Mail} label="Correo" value={data.email} />
             <Row icon={Phone} label="Celular" value={data.phone} />
             <Row
+              icon={Cake}
+              label="Género y edad"
+              value={
+                [data.gender ? GENDER_LABELS[data.gender] : null, data.birthDate ? `${ageFrom(data.birthDate)} años` : null]
+                  .filter(Boolean)
+                  .join(', ') || null
+              }
+            />
+            <Row
               icon={data.libertadTradicionAvailable ? FileCheck2 : FileClock}
               label="Documento"
               value={data.documentNumber ? `${data.documentType ?? ''} ${data.documentNumber}` : null}
@@ -184,6 +198,10 @@ export default function ResidentDetailPage() {
         </Card>
       </div>
 
+      {data.occupancies.map((occupancy) => (
+        <UnitHousehold key={occupancy.id} propertyId={occupancy.propertyId} label={occupancy.propertyLabel} onChanged={refresh} />
+      ))}
+
       <Card className="mt-4 p-6">
         <h2 className="flex items-center gap-2 text-xl font-semibold">
           <History className="size-5 text-muted" aria-hidden /> Historial de cambios
@@ -231,7 +249,22 @@ function Row({ icon: Icon, label, value }: { icon: typeof Mail; label: string; v
   );
 }
 
-const PERSON_FIELDS = ['firstName', 'lastName', 'email', 'phone', 'documentType', 'documentNumber'] as const;
+/** Personas y vehículos de una de las unidades del residente. */
+function UnitHousehold({ propertyId, label, onChanged }: { propertyId: string; label: string; onChanged: () => Promise<void> }) {
+  const tenant = useTenant();
+  const household = useQuery({
+    queryKey: [tenant.tenantId, 'household', propertyId],
+    queryFn: () => api<PropertyHousehold>(`${tenant.apiPath}/properties/${propertyId}/household`),
+  });
+  return (
+    <section className="mt-6">
+      <h2 className="mb-3 text-xl font-semibold">Hogar de {label}</h2>
+      {household.data ? <HouseholdPanel household={household.data} onChanged={onChanged} /> : <Skeleton className="h-40" />}
+    </section>
+  );
+}
+
+const PERSON_FIELDS = ['firstName', 'lastName', 'email', 'phone', 'documentType', 'documentNumber', 'gender', 'birthDate'] as const;
 
 function EditDialog({
   resident,
@@ -253,6 +286,8 @@ function EditDialog({
       phone: resident.phone ?? '',
       documentType: resident.documentType ?? '',
       documentNumber: resident.documentNumber ?? '',
+      gender: resident.gender ?? '',
+      birthDate: resident.birthDate ?? '',
     },
   });
   const { errors } = form.formState;
@@ -280,8 +315,23 @@ function EditDialog({
         <Field label="Correo electrónico" optional error={errors.email?.message}>
           {(props) => <Input {...props} type="email" {...form.register('email')} />}
         </Field>
-        <Field label="Celular" optional error={errors.phone?.message}>
+        <Field label="Celular" error={errors.phone?.message}>
           {(props) => <Input {...props} type="tel" {...form.register('phone')} />}
+        </Field>
+        <Field label="Género" optional error={errors.gender?.message}>
+          {(props) => (
+            <Select {...props} {...form.register('gender')}>
+              <option value="">Selecciona</option>
+              {GENDERS.map((gender) => (
+                <option key={gender} value={gender}>
+                  {GENDER_LABELS[gender]}
+                </option>
+              ))}
+            </Select>
+          )}
+        </Field>
+        <Field label="Fecha de nacimiento" optional error={errors.birthDate?.message}>
+          {(props) => <Input {...props} type="date" min="1900-01-01" {...form.register('birthDate')} />}
         </Field>
         <Field label="Tipo de documento" optional error={errors.documentType?.message}>
           {(props) => (

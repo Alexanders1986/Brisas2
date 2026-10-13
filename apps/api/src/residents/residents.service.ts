@@ -138,6 +138,8 @@ export class ResidentsService {
         ...toListItem(row, active),
         documentType: row.person.documentType as DocumentType | null,
         documentNumber: row.person.documentNumber,
+        gender: row.person.gender,
+        birthDate: row.person.birthDate,
         occupancyHistory: history,
         parkingSpaces: parking.map((item) => ({
           id: item.id,
@@ -259,7 +261,9 @@ export class ResidentsService {
           firstName: input.firstName,
           lastName: input.lastName,
           email: input.email ?? null,
-          phone: input.phone ?? null,
+          phone: input.phone,
+          gender: input.gender ?? null,
+          birthDate: input.birthDate ?? null,
           documentType: input.documentNumber ? (input.documentType ?? null) : null,
           documentNumber: input.documentNumber ?? null,
         };
@@ -430,6 +434,8 @@ export class ResidentsService {
         phone: input.phone,
         documentType: input.documentNumber ? input.documentType : undefined,
         documentNumber: input.documentNumber,
+        gender: input.gender,
+        birthDate: input.birthDate,
         createdBy: tenant.userId,
       })
       .returning();
@@ -647,6 +653,8 @@ const FIELD_LABELS = {
   lastName: 'apellidos',
   email: 'correo',
   phone: 'celular',
+  gender: 'género',
+  birthDate: 'fecha de nacimiento',
   documentType: 'tipo de documento',
   documentNumber: 'número de documento',
 } as const;

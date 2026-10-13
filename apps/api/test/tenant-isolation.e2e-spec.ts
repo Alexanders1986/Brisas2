@@ -64,7 +64,7 @@ describe('Aislamiento entre conjuntos', () => {
       await http(app)
         .put(`${routeA()}/residents/${personB}`)
         .set(...asAdminA())
-        .send({ firstName: 'Intruso', lastName: 'Intruso' })
+        .send({ firstName: 'Intruso', lastName: 'Intruso', phone: '300 555 0100' })
         .expect(404);
       await http(app).put(`${routeA()}/residents/${personB}/access`).set(...asAdminA()).send({ enabled: false }).expect(404);
 

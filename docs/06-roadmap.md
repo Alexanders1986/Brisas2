@@ -7,11 +7,11 @@
 | Fase | Contenido | Estado |
 | --- | --- | --- |
 | 1. Fundamentos | Arquitectura, monorepo, base de datos, autenticación, multi-conjunto, roles, diseño base, navegación | **Terminada** |
-| 2. Administración residencial | Torres, unidades, residentes, parqueaderos, depósitos, mascotas; configuración del conjunto | **Parcial** (ver abajo) |
+| 2. Administración residencial | Torres, unidades, residentes, hogar, vehículos, parqueaderos, depósitos, mascotas; configuración del conjunto | **Parcial** (ver abajo) |
 | 3. Contenido institucional | Documentos, comunicados, horarios, enlace de pagos | Pendiente |
-| 4. PQR | Radicación, bandeja, conversación, adjuntos, notificaciones | Pendiente |
+| 4. PQR | Radicación, bandeja, conversación, adjuntos, notificaciones | **Parcial**: todo menos los adjuntos |
 | 5. Mantenimientos y proyectos | Registro, hitos, evidencias, avance | Pendiente |
-| 6. Analítica | Indicadores, gráficas, exportaciones | Pendiente |
+| 6. Analítica | Indicadores, gráficas, exportaciones | **Parcial**: indicadores de PQR |
 | 7. Aplicación móvil | iOS y Android con Expo | Pendiente |
 | 8. Calidad y despliegue | Pruebas E2E de interfaz, CI/CD, monitoreo, despliegue | Parcial (CI definido) |
 
@@ -20,7 +20,7 @@
 
 ## Lo que funciona hoy
 
-Verificado con 69 pruebas automatizadas (10 de contratos, 59 de la API contra PostgreSQL real)
+Verificado con 93 pruebas automatizadas (14 de contratos, 79 de la API contra PostgreSQL real)
 y un recorrido en navegador de los flujos principales.
 
 **Autenticación y cuenta**
@@ -35,7 +35,7 @@ y un recorrido en navegador de los flujos principales.
 
 **Multi-conjunto y permisos**
 - Un usuario puede pertenecer a varios conjuntos con roles distintos y cambiar entre ellos.
-- Siete roles del sistema y 25 permisos, validados en el servidor en cada petición.
+- Siete roles del sistema y 26 permisos, validados en el servidor en cada petición.
 - Aislamiento en tres capas: API, Row Level Security y claves foráneas compuestas.
 
 **Plataforma (SuperAdmin)**
@@ -56,8 +56,36 @@ y un recorrido en navegador de los flujos principales.
 - Edición, activación y desactivación del acceso, fin de vinculación con historial de
   ocupación, e historial de cambios con autor y fecha.
 
+**Hogar y vehículos**
+- El residente registra desde el portal a quienes viven con él: parentesco, género, fecha de
+  nacimiento (la edad se calcula), celular y correo opcionales, y una casilla para que esa
+  persona también reciba notificaciones (exige celular o correo).
+- El celular es obligatorio para el residente principal; género y fecha de nacimiento, opcionales.
+- Vehículos con tipo, placa, marca, línea, año, color y motor (combustión, eléctrico, híbrido o
+  sin motor). La placa es obligatoria para carros y motos y única en el conjunto.
+- Mascotas con nombre, tipo de animal, raza, sexo, color y si tienen las vacunas al día.
+- Un vecino no puede ver ni modificar el hogar de otra unidad; la administración sí.
+
+**PQR**
+- El residente radica (tipo, categoría, asunto, descripción, unidad) y recibe un número
+  `PQR-AAAA-NNNNNN`, único incluso con radicaciones simultáneas.
+- Estados por revisar, en trámite, resuelta y cerrada, con fechas e historial de cambios.
+- Conversación entre el residente y la administración, con notas internas que el residente
+  nunca recibe. La primera respuesta de la administración pone la solicitud en trámite.
+- Bandeja en lista y en tablero por estados (arrastrar una tarjeta cambia el estado), con
+  búsqueda por radicado, asunto o residente y filtros por estado, tipo, prioridad y asignación.
+- Responsable y prioridad por solicitud.
+- Correos automáticos al radicar, al responder, al comentar el residente, al cambiar de estado,
+  al resolver y al cerrar; uno solo por hecho.
+
+**Reportes**
+- Indicadores de PQR por periodo: recibidas, pendientes, resueltas, tiempo promedio de primera
+  respuesta y de resolución, distribución por estado, categoría, torre y tipo, y tendencia
+  mensual. La pantalla explica cómo se calcula cada uno.
+
 **Portal del residente**
-- Inicio con la identidad del conjunto y los datos de contacto de la administración.
+- Inicio con la identidad del conjunto, accesos a Mis solicitudes y Mi hogar, y los datos de
+  contacto de la administración.
 
 **Infraestructura**
 - Cola de correos con reintentos e idempotencia; plantillas de invitación y recuperación.
@@ -72,6 +100,17 @@ y un recorrido en navegador de los flujos principales.
 | Editar parqueaderos, depósitos y mascotas después del registro | Hoy solo se crean en el asistente. |
 | Adjuntar el certificado de libertad y tradición | Hoy se registra si está disponible; el archivo llega con el almacenamiento. |
 | Reenviar una invitación desde el detalle del residente | La persona puede pedirla desde "Olvidé mi contraseña". |
+
+## Lo que falta de las fases 4 y 6
+
+| Pendiente | Nota |
+| --- | --- |
+| Adjuntar imágenes, PDF y videos a una PQR | Depende del almacenamiento privado (fase 3). |
+| Exportar reportes a Excel y PDF | Los indicadores ya existen; falta la exportación. |
+| Indicadores de proyectos | Llegan con el módulo de proyectos (fase 5). |
+| Enviar notificaciones a las personas del hogar que marcaron la casilla | La preferencia ya se guarda. Hoy los correos de PQR van a quien radicó; los comunicados (fase 3) y un canal de SMS o WhatsApp la usarán. |
+| El residente edita sus propios datos (celular, género, fecha de nacimiento) | Hoy los edita la administración. |
+| Respuestas rápidas predefinidas en la bandeja | — |
 
 ## Fases siguientes: criterios de aceptación
 

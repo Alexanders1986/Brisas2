@@ -15,6 +15,20 @@
       "when": 1791906512106,
       "tag": "0001_security",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791911370710,
+      "tag": "0002_household_vehicles",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791913100171,
+      "tag": "0003_pet_details",
+      "breakpoints": true
     }
   ]
 }

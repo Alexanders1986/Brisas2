@@ -31,7 +31,7 @@ Las cuentas de demostración están en el [README](../README.md#cuentas-de-demos
 
 ```bash
 npm run typecheck     # tipos de todo el monorepo
-npm test              # 69 pruebas; usan su propio PostgreSQL, vacío, en el puerto 54330
+npm test              # 93 pruebas; usan su propio PostgreSQL, vacío, en el puerto 54330
 npm run build         # compilación de producción
 ```
 

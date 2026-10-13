@@ -2,7 +2,7 @@
 
 La fuente de verdad es el esquema en [packages/database/src/schema](../packages/database/src/schema);
 las migraciones SQL generadas están en [packages/database/migrations](../packages/database/migrations).
-Las 36 tablas existen desde la primera migración, aunque los módulos de las fases 3 a 6 aún no
+Las 38 tablas existen (36 desde la primera migración y 2 añadidas después), aunque los módulos de las fases 3 a 6 aún no
 las usan: así el modelo se revisó completo y coherente antes de construir sobre él.
 
 ## Cinco conceptos que no se deben confundir
@@ -14,6 +14,10 @@ las usan: así el modelo se revisó completo y coherente antes de construir sobr
 | **Propiedad** | `properties` | Una unidad: apartamento, casa o local. |
 | **Vinculación** | `property_occupancies` | La relación de una persona con una propiedad: propietario, arrendatario u otro autorizado, con fecha de inicio y de fin. |
 | **Residente** | *(no es una tabla)* | Una persona con al menos una vinculación vigente (`end_date` nulo). |
+
+Además, las **personas del hogar** (`household_members`) son quienes viven en la unidad sin ser
+titulares de una vinculación: cónyuge, hijos, padres. Las registra el propio residente, no
+tienen cuenta de acceso y pertenecen a la unidad.
 
 Consecuencias: una persona puede estar vinculada a varias unidades; una unidad puede tener
 varias personas; al terminar una vinculación la fila se conserva como **historial de
@@ -110,11 +114,13 @@ código de autenticación; *catálogo* = lectura para todos, escritura solo por 
 | --- | --- | --- | --- |
 | `towers` | `name`, `kind`, `floors`, `sort_order` | `(tenant_id, lower(name))` único | conjunto |
 | `properties` | `tower_id?`→towers, `kind`, `number`, `floor`, `area_m2`, `coefficient`, `is_active` | `(tenant_id, tower_id, number)` único; coeficiente entre 0 y 1 | conjunto |
-| `persons` | `user_id?`→users, `first_name`, `last_name`, `email`, `phone`, `document_type`, `document_number`, `deleted_at` | Únicos parciales por correo, por documento y por usuario dentro del conjunto | conjunto |
+| `persons` | `user_id?`→users, `first_name`, `last_name`, `email`, `phone`, `document_type`, `document_number`, `gender`, `birth_date`, `deleted_at` | Únicos parciales por correo, por documento y por usuario dentro del conjunto | conjunto |
 | `property_occupancies` | `property_id`, `person_id`, `relationship`, `start_date`, `end_date`, `household_size`, `libertad_tradicion_available` | Único parcial `(property_id, person_id)` donde `end_date` es nulo; `end_date >= start_date` | conjunto |
 | `parking_spaces` | `number`, `kind`, `property_id?` | `(tenant_id, lower(number))` único | conjunto |
 | `storage_units` | `number`, `property_id?` | `(tenant_id, lower(number))` único | conjunto |
-| `pets` | `property_id`, `owner_person_id?`, `species`, `breed`, `name`, `is_active` | Índice `(tenant_id, property_id)` | conjunto |
+| `pets` | `property_id`, `owner_person_id?`, `species`, `breed`, `name`, `sex`, `color`, `vaccines_up_to_date`, `is_active` | Índice `(tenant_id, property_id)` | conjunto |
+| `household_members` | `property_id`, `first_name`, `last_name`, `kinship`, `gender`, `birth_date`, `phone?`, `email?`, `receives_notifications` | Si recibe notificaciones debe tener celular o correo | conjunto |
+| `vehicles` | `property_id`, `kind`, `powertrain`, `plate?`, `brand`, `model`, `model_year`, `color`, `notes` | `(tenant_id, plate)` único; placa obligatoria para carro y moto | conjunto |
 
 ### Contenido, proyectos y PQR (fases 3 a 5)
 
@@ -146,6 +152,9 @@ código de autenticación; *catálogo* = lectura para todos, escritura solo por 
 ## Migraciones
 
 - `0000_initial_schema.sql` — generado por Drizzle a partir del esquema.
+- `0003_pet_details.sql` — generado: sexo, color y vacunas de las mascotas.
+- `0002_household_vehicles.sql` — generado: personas del hogar, vehículos, género y fecha de
+  nacimiento.
 - `0001_security.sql` — escrito a mano: funciones de contexto, rol `brisas_app`, políticas RLS y
   permisos. Define `app.apply_security()`, que se vuelve a ejecutar tras cada migración.
 

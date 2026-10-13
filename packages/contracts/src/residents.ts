@@ -8,6 +8,7 @@ import {
   sortDirectionSchema,
   uuidSchema,
 } from './common';
+import { GENDERS, type Gender, birthDateSchema } from './household';
 import { RELATIONSHIP_TYPES, type RelationshipType } from './permissions';
 
 export const DOCUMENT_TYPES = ['CC', 'CE', 'PA', 'TI', 'NIT', 'PPT'] as const;
@@ -40,14 +41,16 @@ export const PET_SPECIES_LABELS: Record<PetSpecies, string> = {
 
 const emptyToUndefined = z.literal('').transform(() => undefined);
 const optionalEmail = z.union([emptyToUndefined, emailSchema]).optional();
-const optionalPhone = z.union([emptyToUndefined, phoneSchema]).optional();
 
 export const personInputSchema = z
   .object({
     firstName: z.string().trim().min(1, 'Escribe los nombres').max(80),
     lastName: z.string().trim().min(1, 'Escribe los apellidos').max(80),
     email: optionalEmail,
-    phone: optionalPhone,
+    /** Obligatorio: es el contacto del residente principal de la unidad. */
+    phone: z.string().trim().min(1, 'Escribe el celular').pipe(phoneSchema),
+    gender: z.union([emptyToUndefined, z.enum(GENDERS)]).optional(),
+    birthDate: z.union([emptyToUndefined, birthDateSchema]).optional(),
     documentType: z.union([emptyToUndefined, z.enum(DOCUMENT_TYPES)]).optional(),
     documentNumber: z
       .union([
@@ -178,6 +181,8 @@ export interface ResidentChange {
 export interface ResidentDetail extends ResidentListItem {
   documentType: DocumentType | null;
   documentNumber: string | null;
+  gender: Gender | null;
+  birthDate: string | null;
   /** Todas las vinculaciones, vigentes y terminadas, de la más reciente a la más antigua. */
   occupancyHistory: OccupancySummary[];
   parkingSpaces: { id: string; number: string; kind: ParkingKind; propertyLabel: string }[];

@@ -54,8 +54,8 @@ Todas las respuestas de error tienen la misma forma:
 | 401 | Sin sesión válida | `UNAUTHENTICATED`, `INVALID_CREDENTIALS`, `MFA_CHALLENGE_EXPIRED` |
 | 403 | Sin permiso | `FORBIDDEN`, `TENANT_SUSPENDED`, `MFA_ENROLLMENT_REQUIRED`, `ACCOUNT_DISABLED`, `CSRF_CHECK_FAILED` |
 | 404 | No existe, o no es de tu conjunto | `NOT_FOUND` |
-| 409 | Choca con el estado actual | `DUPLICATE_PERSON`, `OCCUPANCY_EXISTS`, `ASSET_ALREADY_ASSIGNED`, `DUPLICATE_TOWER`, `DUPLICATE_PROPERTY`, `TOWER_HAS_UNITS`, `PROPERTY_OCCUPIED`, `SLUG_TAKEN`, `REFRESH_IN_PROGRESS` |
-| 422 | Válido en forma, imposible por una regla | `PROPERTY_NOT_FOUND`, `PLAN_LIMIT_REACHED`, `EMAIL_REQUIRED`, `INVALID_END_DATE`, `NO_ACTIVE_OCCUPANCY` |
+| 409 | Choca con el estado actual | `PLATE_TAKEN`, `PQR_CLOSED`, `INVALID_STATUS_CHANGE`, `DUPLICATE_PERSON`, `OCCUPANCY_EXISTS`, `ASSET_ALREADY_ASSIGNED`, `DUPLICATE_TOWER`, `DUPLICATE_PROPERTY`, `TOWER_HAS_UNITS`, `PROPERTY_OCCUPIED`, `SLUG_TAKEN`, `REFRESH_IN_PROGRESS` |
+| 422 | Válido en forma, imposible por una regla | `PROPERTY_NOT_FOUND`, `PROPERTY_NOT_YOURS`, `ASSIGNEE_NOT_ALLOWED`, `PLAN_LIMIT_REACHED`, `EMAIL_REQUIRED`, `INVALID_END_DATE`, `NO_ACTIVE_OCCUPANCY` |
 | 429 | Demasiados intentos | `RATE_LIMITED`, `ACCOUNT_LOCKED` |
 | 500 | Error inesperado | `INTERNAL_ERROR` |
 
@@ -79,7 +79,7 @@ curl -s "http://localhost:4000/api/v1/tenants/$TENANT/properties?occupancy=vacan
 curl -s -X POST "http://localhost:4000/api/v1/tenants/$TENANT/residents" \
   -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
   -d '{
-    "person": { "firstName":"Camila", "lastName":"Torres", "email":"camila@correo.test" },
+    "person": { "firstName":"Camila", "lastName":"Torres", "email":"camila@correo.test", "phone":"320 555 0144" },
     "relationship": "tenant",
     "propertyId": "'$PROPERTY'",
     "startDate": "2026-10-13",
@@ -93,8 +93,8 @@ curl -s -X POST "http://localhost:4000/api/v1/tenants/$TENANT/residents" \
 
 ## Endpoints disponibles
 
-41 operaciones. Módulos previstos y aún no construidos: `documents`, `announcements`,
-`projects`, `pqr`, `reports`, `settings` y `notifications`.
+59 operaciones. Módulos previstos y aún no construidos: `documents`, `announcements`,
+`projects`, `settings` y `notifications`.
 
 | Módulo | Método y ruta | Permiso |
 | --- | --- | --- |
@@ -109,3 +109,10 @@ curl -s -X POST "http://localhost:4000/api/v1/tenants/$TENANT/residents" \
 | | `POST /towers` · `PUT` `DELETE /towers/{id}` · `POST /properties` · `POST /properties/generate` · `PATCH /properties/{id}` | `properties.manage` |
 | Residentes | `GET /tenants/{t}/residents` · `GET /residents/{id}` | `residents.read` |
 | | `POST /residents` · `GET /residents/duplicates` · `PUT /residents/{id}` · `PUT /residents/{id}/access` · `POST /residents/{id}/occupancies/{o}/end` | `residents.manage` |
+| Hogar y vehículos | `GET /tenants/{t}/my/household` | `household.manage_own` |
+| | `GET /properties/{p}/household` · `POST` `PUT` `DELETE /properties/{p}/household-members[/{id}]` · `POST` `PUT` `DELETE /properties/{p}/vehicles[/{id}]` · `POST` `PUT` `DELETE /properties/{p}/pets[/{id}]` | vivir en la unidad, o `residents.manage` |
+| PQR | `POST /tenants/{t}/pqrs` | `pqr.create` |
+| | `GET /pqrs` · `GET /pqrs/{id}` · `POST /pqrs/{id}/comments` | quien la radicó, o `pqr.read_all` |
+| | `PATCH /pqrs/{id}` | `pqr.manage`, o `pqr.manage_assigned` si está asignada |
+| | `GET /pqrs/assignees` | `pqr.read_all` |
+| Reportes | `GET /tenants/{t}/reports/pqr?from&to` | `reports.read` |

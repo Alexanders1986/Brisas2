@@ -65,10 +65,14 @@ export class OverviewController {
           (SELECT count(*)::int FROM persons pe JOIN users u ON u.id = pe.user_id
             WHERE pe.deleted_at IS NULL AND u.status = 'active') AS "residentsWithAccess",
           (SELECT count(*)::int FROM persons pe JOIN users u ON u.id = pe.user_id
-            WHERE pe.deleted_at IS NULL AND u.status = 'invited') AS "pendingInvitations"
+            WHERE pe.deleted_at IS NULL AND u.status = 'invited') AS "pendingInvitations",
+          (SELECT count(*)::int FROM pqrs WHERE status = 'pending_review') AS "pqrPendingReview",
+          (SELECT count(*)::int FROM pqrs WHERE status = 'in_progress') AS "pqrInProgress"
       `);
       // Las subconsultas no filtran por conjunto: lo hace Row Level Security.
-      return result.rows[0]!;
+      const data = result.rows[0]!;
+      // Los conteos de PQR solo se entregan a quien puede ver las PQR del conjunto.
+      return tenant.permissions.has('pqr.read_all') ? data : { ...data, pqrPendingReview: null, pqrInProgress: null };
     });
   }
 }

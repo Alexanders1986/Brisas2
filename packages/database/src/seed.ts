@@ -61,6 +61,20 @@ const DEFAULT_TEMPLATES = [
        ${BUTTON('Activar mi cuenta')}`,
     ),
   },
+  {
+    key: 'pqr.update',
+    subject: '{{subject}}',
+    bodyHtml: EMAIL_LAYOUT(
+      `<h1 style="margin:0 0 12px;font-size:22px">Hola, {{name}}</h1>
+       <p style="margin:0;font-size:15px;line-height:1.6">{{message}}</p>
+       <table role="presentation" cellpadding="0" cellspacing="0" style="margin:20px 0 0;font-size:14px">
+         <tr><td style="padding:2px 16px 2px 0;color:#7b8794">Radicado</td><td style="font-weight:600">{{filingNumber}}</td></tr>
+         <tr><td style="padding:2px 16px 2px 0;color:#7b8794">Asunto</td><td>{{pqrSubject}}</td></tr>
+         <tr><td style="padding:2px 16px 2px 0;color:#7b8794">Estado</td><td>{{status}}</td></tr>
+       </table>
+       ${BUTTON('Ver la solicitud')}`,
+    ),
+  },
 ];
 
 /** Sincroniza los catálogos que el código da por existentes. Idempotente. */
@@ -348,6 +362,7 @@ export async function seedDemoData(db: Db): Promise<DemoSeedResult> {
       firstName: 'Laura',
       lastName: 'Gómez',
       email: 'laura.gomez@brisas.test',
+      phone: '300 555 0101',
       documentNumber: '52100200',
       userId: laura.id,
       propertyId: unit(colinaUnits, '5'),
@@ -361,6 +376,7 @@ export async function seedDemoData(db: Db): Promise<DemoSeedResult> {
       firstName: 'Jorge',
       lastName: 'Díaz',
       email: 'jorge.diaz@correo.test',
+      phone: '312 555 0104',
       documentNumber: '71700800',
       propertyId: unit(colinaUnits, '1'),
       relationship: 'owner',

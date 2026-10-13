@@ -2,7 +2,20 @@
 
 import type { Paginated, PropertySummary, TenantBranding, TenantDashboard, TowerSummary } from '@brisas/contracts';
 import { useQuery } from '@tanstack/react-query';
-import { Building2, Clock, Mail, MapPin, MessageCircle, PawPrint, Phone, SquareParking, UserPlus } from 'lucide-react';
+import {
+  ArrowRight,
+  Building2,
+  Clock,
+  Mail,
+  MapPin,
+  MessageCircle,
+  MessagesSquare,
+  PawPrint,
+  Phone,
+  SquareParking,
+  UserPlus,
+  UsersRound,
+} from 'lucide-react';
 import Link from 'next/link';
 import { Facade, FacadeLegend } from '@/components/facade';
 import { useSession } from '@/components/providers';
@@ -85,8 +98,17 @@ function AdminDashboard() {
         <div className="grid grid-cols-2 gap-4">
           <Stat label="Residentes activos" value={data?.activeResidents} href={`${tenant.path}/residentes`} />
           <Stat label="Con acceso al portal" value={data?.residentsWithAccess} hint={data ? invitationHint(data.pendingInvitations) : undefined} />
-          <Stat label="Parqueaderos" value={data?.parkingSpaces} icon={SquareParking} />
-          <Stat label="Mascotas" value={data?.pets} icon={PawPrint} />
+          {data && data.pqrPendingReview !== null ? (
+            <>
+              <Stat label="PQR por revisar" value={data.pqrPendingReview} href={`${tenant.path}/pqr?estado=pending_review`} icon={MessagesSquare} />
+              <Stat label="PQR en trámite" value={data.pqrInProgress ?? 0} href={`${tenant.path}/pqr?estado=in_progress`} icon={MessagesSquare} />
+            </>
+          ) : (
+            <>
+              <Stat label="Parqueaderos" value={data?.parkingSpaces} icon={SquareParking} />
+              <Stat label="Mascotas" value={data?.pets} icon={PawPrint} />
+            </>
+          )}
         </div>
       </div>
 
@@ -188,6 +210,25 @@ function ResidentHome() {
         <p className="mt-2 max-w-xl text-lg opacity-90">{info?.welcomeMessage ?? 'Te damos la bienvenida a tu conjunto.'}</p>
       </section>
 
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {tenant.can('pqr.create') && (
+          <QuickLink
+            href={`${tenant.path}/pqr`}
+            icon={MessagesSquare}
+            title="Mis solicitudes"
+            description="Radica una petición, queja o reclamo y sigue su estado."
+          />
+        )}
+        {tenant.can('household.manage_own') && (
+          <QuickLink
+            href={`${tenant.path}/hogar`}
+            icon={UsersRound}
+            title="Mi hogar"
+            description="Registra a quienes viven contigo y tus vehículos."
+          />
+        )}
+      </div>
+
       <Card className="mt-4 p-6">
         <h2 className="text-xl font-semibold">Administración</h2>
         {branding.isPending ? (
@@ -209,9 +250,24 @@ function ResidentHome() {
       </Card>
 
       <p className="mt-6 text-sm text-muted">
-        Pronto encontrarás aquí los comunicados, los documentos del conjunto, tus solicitudes y el pago de administración.
+        Pronto encontrarás aquí también los comunicados, los documentos del conjunto y el pago de administración.
       </p>
     </>
+  );
+}
+
+function QuickLink({ href, icon: Icon, title, description }: { href: string; icon: typeof Clock; title: string; description: string }) {
+  return (
+    <Link href={href} className="group flex items-center gap-4 rounded-(--radius-card) border border-line bg-surface p-5 transition hover:border-brand">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand-ink">
+        <Icon className="size-6" aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-display text-lg font-semibold">{title}</span>
+        <span className="block text-sm text-muted">{description}</span>
+      </span>
+      <ArrowRight className="size-5 shrink-0 text-muted transition group-hover:translate-x-1 group-hover:text-brand" aria-hidden />
+    </Link>
   );
 }
 

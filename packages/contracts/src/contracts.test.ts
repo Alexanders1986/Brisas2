@@ -4,7 +4,10 @@ import {
   PERMISSION_KEYS,
   ROLE_KEYS,
   ROLE_PERMISSIONS,
+  ageFrom,
   createResidentSchema,
+  householdMemberSchema,
+  vehicleSchema,
   dateOnlySchema,
   generatePropertiesSchema,
   listPropertiesQuerySchema,
@@ -13,7 +16,7 @@ import {
 } from './index';
 
 const validResident = {
-  person: { firstName: 'Ana', lastName: 'Gómez', email: 'ANA@Example.com ' },
+  person: { firstName: 'Ana', lastName: 'Gómez', email: 'ANA@Example.com ', phone: '300 555 0100' },
   relationship: 'owner',
   propertyId: '3f0e8a52-6f0b-4c53-9d3e-0a4b6c1d2e3f',
   startDate: '2026-01-15',
@@ -61,7 +64,7 @@ test('el asistente exige persona nueva o existente, pero no ambas', () => {
 test('no se puede invitar a una persona nueva sin correo', () => {
   const result = createResidentSchema.safeParse({
     ...validResident,
-    person: { firstName: 'Ana', lastName: 'Gómez', email: '' },
+    person: { firstName: 'Ana', lastName: 'Gómez', email: '', phone: '300 555 0100' },
     sendInvitation: true,
   });
   assert.equal(result.success, false);
@@ -86,4 +89,30 @@ test('el generador de unidades valida el rango de pisos', () => {
 test('includeInactive=false en el query string se interpreta como falso', () => {
   assert.equal(listPropertiesQuerySchema.parse({ includeInactive: 'false' }).includeInactive, false);
   assert.equal(listPropertiesQuerySchema.parse({ includeInactive: 'true' }).includeInactive, true);
+});
+
+test('el celular es obligatorio para el residente principal', () => {
+  const result = createResidentSchema.safeParse({ ...validResident, person: { firstName: 'Ana', lastName: 'Gómez', phone: '' } });
+  assert.equal(result.success, false);
+});
+
+test('en el hogar el celular es opcional, salvo que la persona reciba notificaciones', () => {
+  const member = { firstName: 'Luis', lastName: 'Gómez', kinship: 'child', gender: 'male', birthDate: '2015-04-20' };
+  assert.equal(householdMemberSchema.safeParse(member).success, true);
+  assert.equal(householdMemberSchema.safeParse({ ...member, receivesNotifications: true }).success, false);
+  assert.equal(householdMemberSchema.safeParse({ ...member, receivesNotifications: true, phone: '310 555 0101' }).success, true);
+  assert.equal(householdMemberSchema.safeParse({ ...member, birthDate: '2999-01-01' }).success, false);
+});
+
+test('la edad se calcula en años cumplidos', () => {
+  assert.equal(ageFrom('2000-10-14', new Date(2026, 9, 13)), 25);
+  assert.equal(ageFrom('2000-10-13', new Date(2026, 9, 13)), 26);
+  assert.equal(ageFrom(null), null);
+});
+
+test('la placa se normaliza y es obligatoria para carros y motos, no para bicicletas', () => {
+  const base = { powertrain: 'combustion', color: 'Rojo' };
+  assert.equal(vehicleSchema.parse({ ...base, kind: 'car', plate: 'abc-123' }).plate, 'ABC123');
+  assert.equal(vehicleSchema.safeParse({ ...base, kind: 'motorcycle', plate: '' }).success, false);
+  assert.equal(vehicleSchema.safeParse({ kind: 'bicycle', powertrain: 'electric', color: 'Negro', plate: '' }).success, true);
 });

@@ -4,8 +4,8 @@ Plataforma SaaS para administrar varios conjuntos residenciales desde una sola i
 panel administrativo, portal de residentes y consola de plataforma, sobre una API REST segura
 y una base de datos PostgreSQL con aislamiento por conjunto.
 
-> **Estado: Fase 1 terminada** (fundamentos, autenticación, multi-conjunto, roles) más el
-> registro de torres, unidades y residentes. El detalle de lo construido y lo pendiente está
+> **Estado:** fundamentos, autenticación, multi-conjunto y roles terminados; además funcionan
+> torres y unidades, residentes, hogar y vehículos, PQR con conversación y reportes de PQR. El detalle de lo construido y lo pendiente está
 > en [docs/06-roadmap.md](docs/06-roadmap.md).
 
 ## Empezar en 3 pasos
@@ -36,7 +36,7 @@ Contraseña de todas: `Brisas-Demo-2026`. Son **datos de demostración**, solo p
 | --- | --- |
 | `admin.parque@brisas.test` | Panel administrativo de *Brisas del Parque* (2 torres, 40 apartamentos) |
 | `admin.colina@brisas.test` | Panel administrativo de *Altos de la Colina* (12 casas) |
-| `laura.gomez@brisas.test` | Una misma persona: propietaria en un conjunto y arrendataria en el otro |
+| `laura.gomez@brisas.test` | Residente en dos conjuntos: radica PQR, sigue su estado y registra su hogar y vehículos |
 | `superadmin@brisas.test` | Consola de plataforma: crear y desactivar conjuntos |
 
 Los correos (invitaciones, recuperación de contraseña) no se envían en desarrollo: el enlace

@@ -88,7 +88,7 @@ describe('Residentes y unidades', () => {
 
     it('valida los datos y señala cada campo con error', async () => {
       const response = await create({
-        person: { firstName: '', lastName: 'Pérez', email: 'no-es-correo' },
+        person: { firstName: '', lastName: 'Pérez', email: 'no-es-correo', phone: '300 555 0100' },
         relationship: 'dueño',
         propertyId: 'no-es-uuid',
         startDate: '2026-02-30',
@@ -105,7 +105,7 @@ describe('Residentes y unidades', () => {
 
       const sameEmail = await create({
         ...residentPayload(units.get('201')!),
-        person: { firstName: 'Otra', lastName: 'Persona', email: payload.person.email.toUpperCase() },
+        person: { firstName: 'Otra', lastName: 'Persona', email: payload.person.email.toUpperCase(), phone: '300 555 0100' },
       }).expect(409);
       expect(sameEmail.body.error.code).toBe('DUPLICATE_PERSON');
       expect(sameEmail.body.error.details.matches[0]).toMatchObject({ personId: first.body.personId, matchedBy: 'email' });
@@ -163,10 +163,17 @@ describe('Residentes y unidades', () => {
       await http(app)
         .put(`${base()}/residents/${personId}`)
         .set(...admin())
-        .send({ firstName: 'Ana María', lastName: 'Rincón', phone: '311 555 0199' })
+        .send({ firstName: 'Ana María', lastName: 'Rincón', phone: '311 555 0199', gender: 'female', birthDate: '1988-05-17' })
         .expect(204);
       const detail = await http(app).get(`${base()}/residents/${personId}`).set(...admin()).expect(200);
-      expect(detail.body).toMatchObject({ firstName: 'Ana María', lastName: 'Rincón', email: null, documentNumber: null });
+      expect(detail.body).toMatchObject({
+        firstName: 'Ana María',
+        lastName: 'Rincón',
+        email: null,
+        documentNumber: null,
+        gender: 'female',
+        birthDate: '1988-05-17',
+      });
       expect(detail.body.changes[0]).toMatchObject({ action: 'resident.updated' });
       expect(detail.body.changes[0].summary).toContain('nombres');
     });
@@ -176,7 +183,7 @@ describe('Residentes y unidades', () => {
       const tower = await createTowerWithUnits(app, scenario.tenantA, 'Torre 9');
       const created = await create(
         residentPayload(tower.units.get('101')!, {
-          person: { firstName: 'Rosa', lastName: 'Niño', email },
+          person: { firstName: 'Rosa', lastName: 'Niño', email, phone: '300 555 0100' },
           relationship: 'tenant',
           sendInvitation: true,
         }),
@@ -217,7 +224,7 @@ describe('Residentes y unidades', () => {
       const email = `saliente-${uniqueSuffix()}@pruebas.test`;
       const tower = await createTowerWithUnits(app, scenario.tenantA, 'Torre 8');
       const created = await create(
-        residentPayload(tower.units.get('101')!, { person: { firstName: 'Luis', lastName: 'Mora', email }, sendInvitation: true }),
+        residentPayload(tower.units.get('101')!, { person: { firstName: 'Luis', lastName: 'Mora', email, phone: '300 555 0100' }, sendInvitation: true }),
       ).expect(201);
       const { personId, occupancyId } = created.body;
       await acceptInvitation(app, email);

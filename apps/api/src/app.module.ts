@@ -10,8 +10,10 @@ import { AppConfig } from './config/app-config';
 import { ConfigModule } from './config/config.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthController } from './health/health.controller';
+import { HouseholdModule } from './household/household.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PlatformModule } from './platform/platform.module';
+import { PqrModule } from './pqr/pqr.module';
 import { ResidentsModule } from './residents/residents.module';
 import { TenancyModule } from './tenancy/tenancy.module';
 
@@ -35,6 +37,8 @@ import { TenancyModule } from './tenancy/tenancy.module';
     PlatformModule,
     TenancyModule,
     ResidentsModule,
+    HouseholdModule,
+    PqrModule,
   ],
   controllers: [HealthController],
   providers: [

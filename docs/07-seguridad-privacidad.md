@@ -38,7 +38,8 @@ transmisión de datos con cada conjunto y el registro ante la SIC cuando aplique
 | --- | --- |
 | **Autorización previa y expresa** | Implementado: al activar su cuenta la persona acepta el tratamiento; se guarda quién, cuándo, desde qué IP y qué versión de la política (`consents`). |
 | **Prueba de la autorización** | Implementado: la tabla `consents` es consultable por titular. |
-| **Finalidad y minimización** | Implementado: solo se piden nombres para registrar a una persona; correo, celular y documento son opcionales. No se guardan datos sensibles ni bancarios. |
+| **Finalidad y minimización** | Implementado: para el residente principal se piden nombres y celular; correo, documento, género y fecha de nacimiento son opcionales. No se guardan datos bancarios. |
+| **Datos de menores de edad** | Atención: el registro del hogar incluye hijos con fecha de nacimiento. El tratamiento de datos de niños, niñas y adolescentes tiene protección reforzada (art. 7 de la Ley 1581); la política de cada conjunto debe justificar su finalidad y quién los autoriza. Pendiente de revisión legal. |
 | **Seguridad** | Implementado: controles de la tabla anterior. |
 | **Acceso restringido** | Implementado: solo roles con `residents.read` ven datos de residentes, y solo de su conjunto. |
 | **Aviso de privacidad** | Parcial: el texto de autorización se muestra al activar la cuenta. Pendiente: política completa editable por conjunto (`tenant_settings.privacy_policy_text`) y visible en el portal. |

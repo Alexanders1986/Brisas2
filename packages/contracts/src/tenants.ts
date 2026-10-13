@@ -90,4 +90,7 @@ export interface TenantDashboard {
   parkingSpaces: number;
   residentsWithAccess: number;
   pendingInvitations: number;
+  /** PQR por revisar y en trámite; null si el rol no puede ver las PQR del conjunto. */
+  pqrPendingReview: number | null;
+  pqrInProgress: number | null;
 }
