@@ -1,0 +1,24 @@
+# Alternativa a la base de datos embebida de `npm run dev`, para quien prefiera Docker.
+# Uso:  docker compose -f infrastructure/docker-compose.yml up -d
+# Luego: npm run db:migrate && npm run db:seed, y arranca la API y la web por separado
+#        (npm run dev -w @brisas/api  /  npm run dev -w @brisas/web).
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_dev
+      POSTGRES_DB: brisas
+    ports:
+      - '54329:5432'
+    volumes:
+      - brisas_pg:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d brisas']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  brisas_pg:

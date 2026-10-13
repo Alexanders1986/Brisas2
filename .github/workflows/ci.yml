@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_ci
+          POSTGRES_DB: brisas_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      # Las pruebas usan el PostgreSQL del servicio en lugar del embebido.
+      TEST_DATABASE_ADMIN_URL: postgres://postgres:postgres_ci@localhost:5432/brisas_test
+      TEST_APP_DB_PASSWORD: app_ci_password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Tipos
+        run: npm run typecheck
+      - name: Pruebas (unitarias, API, aislamiento multi-tenant)
+        run: npm test
+      - name: Compilación
+        run: npm run build
+      - name: Auditoría de dependencias
+        run: npm audit --omit=dev --audit-level=high

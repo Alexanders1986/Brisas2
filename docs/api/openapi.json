@@ -1,0 +1,2271 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Estado del servicio y de su conexión a la base de datos",
+        "tags": [
+          "Salud"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Con `client: \"web\"` el refresh token se entrega en una cookie httpOnly; con `client: \"mobile\"` va en el cuerpo. Si la cuenta tiene verificación en dos pasos responde `mfa_required` con un `challengeToken`.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sesión iniciada o verificación en dos pasos requerida"
+          },
+          "401": {
+            "description": "INVALID_CREDENTIALS"
+          },
+          "429": {
+            "description": "ACCOUNT_LOCKED o RATE_LIMITED"
+          }
+        },
+        "summary": "Iniciar sesión",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/mfa/verify": {
+      "post": {
+        "operationId": "AuthController_verifyMfa",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Completar el inicio de sesión con el código de verificación en dos pasos",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "description": "Rota el refresh token. En web se lee de la cookie y exige el encabezado `X-Brisas-Client: web`; en móvil se envía en el cuerpo.",
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Renovar el access token",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cerrar la sesión actual",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Usuario autenticado, sus conjuntos, roles y permisos",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/password/forgot": {
+      "post": {
+        "description": "Responde 202 exista o no la cuenta, para no revelar qué correos están registrados.",
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        },
+        "summary": "Solicitar el enlace para restablecer la contraseña",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/password/reset": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Crear una nueva contraseña con el enlace recibido por correo",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/invitations/preview": {
+      "post": {
+        "operationId": "AuthController_previewInvitation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationPreviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Validar un enlace de invitación antes de mostrar el formulario",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/auth/invitations/accept": {
+      "post": {
+        "operationId": "AuthController_acceptInvitation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Activar la cuenta: crear contraseña y aceptar el tratamiento de datos",
+        "tags": [
+          "Autenticación"
+        ]
+      }
+    },
+    "/api/v1/account/sessions": {
+      "get": {
+        "operationId": "AccountController_sessions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Dispositivos con sesión abierta",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/sessions/{sessionId}": {
+      "delete": {
+        "operationId": "AccountController_revokeSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cerrar la sesión de un dispositivo",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/sessions/revoke-others": {
+      "post": {
+        "operationId": "AccountController_revokeOthers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cerrar todas las sesiones excepto la actual",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/password": {
+      "post": {
+        "description": "Cierra las demás sesiones abiertas.",
+        "operationId": "AccountController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambiar la contraseña",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/mfa/setup": {
+      "post": {
+        "operationId": "AccountController_setupMfa",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generar el secreto y el código QR de la verificación en dos pasos",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/mfa/enable": {
+      "post": {
+        "operationId": "AccountController_enableMfa",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaEnableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activar la verificación en dos pasos y obtener los códigos de recuperación",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/account/mfa/disable": {
+      "post": {
+        "operationId": "AccountController_disableMfa",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaDisableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desactivar la verificación en dos pasos (exige la contraseña)",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/api/v1/platform/metrics": {
+      "get": {
+        "operationId": "PlatformTenantsController_metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Métricas globales de la plataforma",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      }
+    },
+    "/api/v1/platform/plans": {
+      "get": {
+        "operationId": "PlatformTenantsController_plans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Planes de servicio disponibles",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      }
+    },
+    "/api/v1/platform/tenants": {
+      "get": {
+        "description": "Paginado, con búsqueda por nombre, identificador o NIT.",
+        "operationId": "PlatformTenantsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "suspended"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar conjuntos residenciales",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      },
+      "post": {
+        "description": "Crea el conjunto, sus categorías documentales por defecto e invita por correo a su primer administrador.",
+        "operationId": "PlatformTenantsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "SLUG_TAKEN"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear un conjunto residencial",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      }
+    },
+    "/api/v1/platform/tenants/{tenantId}": {
+      "get": {
+        "operationId": "PlatformTenantsController_get",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Consultar un conjunto",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      },
+      "patch": {
+        "operationId": "PlatformTenantsController_update",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar nombre, NIT o plan de un conjunto",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      }
+    },
+    "/api/v1/platform/tenants/{tenantId}/status": {
+      "put": {
+        "description": "Un conjunto desactivado conserva sus datos, pero nadie puede operar sobre él.",
+        "operationId": "PlatformTenantsController_setStatus",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTenantStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activar o desactivar un conjunto",
+        "tags": [
+          "Plataforma (SuperAdmin)"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/branding": {
+      "get": {
+        "description": "Disponible para cualquier miembro activo. Alimenta el encabezado y la pantalla de inicio.",
+        "operationId": "OverviewController_branding",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Identidad e información institucional del conjunto",
+        "tags": [
+          "Conjunto"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/dashboard": {
+      "get": {
+        "description": "Residentes activos = personas con al menos una vinculación vigente. Unidades ocupadas = unidades activas con al menos una vinculación vigente.",
+        "operationId": "OverviewController_dashboard",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Indicadores del panel administrativo",
+        "tags": [
+          "Conjunto"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/towers": {
+      "get": {
+        "operationId": "StructureController_listTowers",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar torres y bloques con su número de unidades",
+        "tags": [
+          "Torres y unidades"
+        ]
+      },
+      "post": {
+        "operationId": "StructureController_createTower",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TowerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "DUPLICATE_TOWER"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una torre o bloque",
+        "tags": [
+          "Torres y unidades"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/towers/{towerId}": {
+      "put": {
+        "operationId": "StructureController_updateTower",
+        "parameters": [
+          {
+            "name": "towerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TowerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar una torre o bloque",
+        "tags": [
+          "Torres y unidades"
+        ]
+      },
+      "delete": {
+        "operationId": "StructureController_deleteTower",
+        "parameters": [
+          {
+            "name": "towerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "TOWER_HAS_UNITS"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Eliminar una torre sin unidades",
+        "tags": [
+          "Torres y unidades"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties": {
+      "get": {
+        "description": "Filtros por torre, número y ocupación. Paginado.",
+        "operationId": "StructureController_listProperties",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 500,
+              "default": 50,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "towerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "occupancy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "occupied",
+                "vacant"
+              ]
+            }
+          },
+          {
+            "name": "includeInactive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "true",
+                    "false"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar unidades",
+        "tags": [
+          "Torres y unidades"
+        ]
+      },
+      "post": {
+        "operationId": "StructureController_createProperty",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "DUPLICATE_PROPERTY"
+          },
+          "422": {
+            "description": "PLAN_LIMIT_REACHED o TOWER_NOT_FOUND"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crear una unidad",
+        "tags": [
+          "Torres y unidades"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/generate": {
+      "post": {
+        "description": "Numera como <piso><consecutivo>: 101, 102… Es idempotente: omite las unidades que ya existen.",
+        "operationId": "StructureController_generateProperties",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePropertiesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generar en bloque las unidades de una torre",
+        "tags": [
+          "Torres y unidades"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/properties/{propertyId}": {
+      "patch": {
+        "operationId": "StructureController_updateProperty",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePropertyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "PROPERTY_OCCUPIED o DUPLICATE_PROPERTY"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Actualizar o desactivar una unidad",
+        "tags": [
+          "Torres y unidades"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/residents": {
+      "get": {
+        "description": "Búsqueda por nombre, correo, documento o celular. Filtros por torre, unidad y tipo de vinculación.",
+        "operationId": "ResidentsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "towerId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relationship",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "owner",
+                "tenant",
+                "authorized"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "active",
+              "type": "string",
+              "enum": [
+                "active",
+                "former",
+                "all"
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "name",
+              "type": "string",
+              "enum": [
+                "name",
+                "createdAt"
+              ]
+            }
+          },
+          {
+            "name": "direction",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listar residentes",
+        "tags": [
+          "Residentes"
+        ]
+      },
+      "post": {
+        "description": "Crea la persona (o vincula una existente), su vinculación con la unidad, parqueaderos, depósitos y mascotas en una sola transacción. Con `sendInvitation` crea la cuenta de acceso y envía la invitación.",
+        "operationId": "ResidentsController_create",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateResidentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "DUPLICATE_PERSON, OCCUPANCY_EXISTS o ASSET_ALREADY_ASSIGNED"
+          },
+          "422": {
+            "description": "PROPERTY_NOT_FOUND o EMAIL_REQUIRED"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registrar un residente (asistente completo)",
+        "tags": [
+          "Residentes"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/residents/duplicates": {
+      "get": {
+        "operationId": "ResidentsController_duplicates",
+        "parameters": [
+          {
+            "name": "email",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 254,
+              "type": "string"
+            }
+          },
+          {
+            "name": "documentNumber",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "excludePersonId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Buscar personas ya registradas con el mismo correo o documento",
+        "tags": [
+          "Residentes"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/residents/{personId}": {
+      "get": {
+        "operationId": "ResidentsController_get",
+        "parameters": [
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle del residente: vinculaciones, bienes, mascotas e historial de cambios",
+        "tags": [
+          "Residentes"
+        ]
+      },
+      "put": {
+        "operationId": "ResidentsController_update",
+        "parameters": [
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateResidentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "409": {
+            "description": "DUPLICATE_PERSON"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Editar los datos personales",
+        "tags": [
+          "Residentes"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/residents/{personId}/access": {
+      "put": {
+        "description": "Al activar por primera vez se envía la invitación al correo de la persona.",
+        "operationId": "ResidentsController_setAccess",
+        "parameters": [
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetResidentAccessDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activar o desactivar el acceso al portal",
+        "tags": [
+          "Residentes"
+        ]
+      }
+    },
+    "/api/v1/tenants/{tenantId}/residents/{personId}/occupancies/{occupancyId}/end": {
+      "post": {
+        "description": "Conserva la fila como historial de ocupación. Si era la última vigente, suspende el acceso al portal.",
+        "operationId": "ResidentsController_endOccupancy",
+        "parameters": [
+          {
+            "name": "personId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "occupancyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "Identificador del conjunto residencial",
+            "schema": {
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndOccupancyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Terminar una vinculación",
+        "tags": [
+          "Residentes"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Brisas · API de gestión residencial",
+    "description": "API REST versionada de la plataforma.\n\n**Autenticación.** Envía `Authorization: Bearer <accessToken>`. El access token dura pocos minutos; \nrenuévalo con `POST /auth/refresh`.\n\n**Conjuntos.** Los recursos de un conjunto viven bajo `/tenants/{tenantId}/…`. El servidor valida en cada \npetición que el usuario pertenezca al conjunto y tenga el permiso requerido.\n\n**Errores.** Todas las respuestas de error tienen la forma \n`{ \"error\": { \"code\", \"message\", \"fields\"?, \"details\"?, \"requestId\" } }`. `code` es estable; `message` está \nen español y puede mostrarse al usuario; `fields` trae los errores por campo.\n\n**Paginación.** Los listados aceptan `page` y `pageSize` y responden \n`{ items, page, pageSize, total, totalPages }`.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "client": {
+            "default": "web",
+            "type": "string",
+            "enum": [
+              "web",
+              "mobile"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "MfaLoginDto": {
+        "type": "object",
+        "properties": {
+          "challengeToken": {
+            "type": "string",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^(\\d{6}|[A-Za-z0-9]{5}-[A-Za-z0-9]{5})$"
+          },
+          "client": {
+            "default": "web",
+            "type": "string",
+            "enum": [
+              "web",
+              "mobile"
+            ]
+          }
+        },
+        "required": [
+          "challengeToken",
+          "code"
+        ]
+      },
+      "RefreshDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20
+          },
+          "password": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "token",
+          "password"
+        ]
+      },
+      "InvitationPreviewDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "AcceptInvitationDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 20
+          },
+          "password": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 128
+          },
+          "acceptPrivacyPolicy": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "token",
+          "password",
+          "acceptPrivacyPolicy"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "MfaEnableDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "MfaDisableDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "CreateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "slug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 40,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "taxId": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "planKey": {
+            "default": "basic",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "admin": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "lastName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "email": {
+                "type": "string",
+                "maxLength": 254
+              }
+            },
+            "required": [
+              "firstName",
+              "lastName",
+              "email"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "slug",
+          "admin"
+        ]
+      },
+      "UpdateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "taxId": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "planKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          }
+        }
+      },
+      "SetTenantStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "suspended"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "TowerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "kind": {
+            "default": "tower",
+            "type": "string",
+            "enum": [
+              "tower",
+              "block",
+              "stage"
+            ]
+          },
+          "floors": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "PropertyDto": {
+        "type": "object",
+        "properties": {
+          "towerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "nullable": true
+          },
+          "kind": {
+            "default": "apartment",
+            "type": "string",
+            "enum": [
+              "apartment",
+              "house",
+              "commercial"
+            ]
+          },
+          "number": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "floor": {
+            "type": "integer",
+            "minimum": -5,
+            "maximum": 200,
+            "nullable": true
+          },
+          "areaM2": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 100000,
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "number"
+        ]
+      },
+      "GeneratePropertiesDto": {
+        "type": "object",
+        "properties": {
+          "towerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "fromFloor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "toFloor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "unitsPerFloor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 40
+          },
+          "kind": {
+            "default": "apartment",
+            "type": "string",
+            "enum": [
+              "apartment",
+              "house",
+              "commercial"
+            ]
+          }
+        },
+        "required": [
+          "towerId",
+          "fromFloor",
+          "toFloor",
+          "unitsPerFloor"
+        ]
+      },
+      "UpdatePropertyDto": {
+        "type": "object",
+        "properties": {
+          "towerId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "nullable": true
+          },
+          "kind": {
+            "default": "apartment",
+            "type": "string",
+            "enum": [
+              "apartment",
+              "house",
+              "commercial"
+            ]
+          },
+          "number": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20
+          },
+          "floor": {
+            "type": "integer",
+            "minimum": -5,
+            "maximum": 200,
+            "nullable": true
+          },
+          "areaM2": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 100000,
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateResidentDto": {
+        "type": "object",
+        "properties": {
+          "existingPersonId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "person": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "lastName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "email": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "maxLength": 254
+                  }
+                ]
+              },
+              "phone": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^\\+?[\\d\\s()-]{7,20}$"
+                  }
+                ]
+              },
+              "documentType": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "CC",
+                      "CE",
+                      "PA",
+                      "TI",
+                      "NIT",
+                      "PPT"
+                    ]
+                  }
+                ]
+              },
+              "documentNumber": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[A-Z0-9-]{4,20}$"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "firstName",
+              "lastName"
+            ]
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "tenant",
+              "authorized"
+            ]
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "startDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "householdSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "parkingSpaces": {
+            "default": [],
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                },
+                "kind": {
+                  "default": "car",
+                  "type": "string",
+                  "enum": [
+                    "car",
+                    "motorcycle",
+                    "bicycle"
+                  ]
+                }
+              },
+              "required": [
+                "number"
+              ]
+            }
+          },
+          "storageUnits": {
+            "default": [],
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 20
+                }
+              },
+              "required": [
+                "number"
+              ]
+            }
+          },
+          "pets": {
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "species": {
+                  "type": "string",
+                  "enum": [
+                    "dog",
+                    "cat",
+                    "bird",
+                    "other"
+                  ]
+                },
+                "breed": {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                "name": {
+                  "type": "string",
+                  "maxLength": 60
+                }
+              },
+              "required": [
+                "species"
+              ]
+            }
+          },
+          "libertadTradicionAvailable": {
+            "default": false,
+            "type": "boolean"
+          },
+          "sendInvitation": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "relationship",
+          "propertyId",
+          "startDate",
+          "householdSize"
+        ]
+      },
+      "UpdateResidentDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "maxLength": 254
+              }
+            ]
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "pattern": "^\\+?[\\d\\s()-]{7,20}$"
+              }
+            ]
+          },
+          "documentType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "CC",
+                  "CE",
+                  "PA",
+                  "TI",
+                  "NIT",
+                  "PPT"
+                ]
+              }
+            ]
+          },
+          "documentNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": ""
+              },
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9-]{4,20}$"
+              }
+            ]
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName"
+        ]
+      },
+      "SetResidentAccessDto": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ]
+      },
+      "EndOccupancyDto": {
+        "type": "object",
+        "properties": {
+          "endDate": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        },
+        "required": [
+          "endDate"
+        ]
+      }
+    }
+  }
+}

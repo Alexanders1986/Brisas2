@@ -1,0 +1,42 @@
+{
+  "name": "brisas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma SaaS de gestión residencial multi-conjunto",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run build:packages && concurrently -k -n db,pkg,api,web -c gray,magenta,cyan,green \"npm run db:dev\" \"npm run dev:packages\" \"npm run dev -w @brisas/api\" \"npm run dev -w @brisas/web\"",
+    "dev:packages": "concurrently -n contracts,database \"npm run dev -w @brisas/contracts\" \"npm run dev -w @brisas/database\"",
+    "build:packages": "npm run build -w @brisas/contracts && npm run build -w @brisas/database",
+    "build": "npm run build:packages && npm run build -w @brisas/api && npm run build -w @brisas/web",
+    "typecheck": "npm run build:packages && npm run typecheck -w @brisas/api && npm run typecheck -w @brisas/web",
+    "test": "npm run build:packages && npm run test -w @brisas/contracts && npm run test -w @brisas/api",
+    "db:dev": "node scripts/dev-db.mjs",
+    "db:generate": "npm run generate -w @brisas/database",
+    "db:migrate": "npm run migrate -w @brisas/database",
+    "db:seed": "npm run seed -w @brisas/database"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "embedded-postgres": "18.4.0-beta.17",
+    "typescript": "~5.9.3",
+    "dotenv": "^17.0.0"
+  },
+  "allowScripts": {
+    "@embedded-postgres/windows-x64@18.4.0-beta.17": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  },
+  "overrides": {
+    "@nestjs/swagger": {
+      "js-yaml": "^4.3.2"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+@import 'tailwindcss';
+
+/*
+ * Sistema de diseño. Los colores son variables CSS para que el modo oscuro y la marca
+ * de cada conjunto (--brand) cambien sin tocar los componentes.
+ */
+:root {
+  --bg: #f4f6f7;
+  --surface: #ffffff;
+  --surface-2: #eef1f3;
+  --line: #dde3e7;
+  --ink: #1b2430;
+  --muted: #5b6876;
+  --brand: #0f766e;
+  --on-brand: #ffffff;
+  --warn: #b45309;
+  --danger: #b42318;
+  --ok: #157f3b;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #11161c;
+  --surface: #19212a;
+  --surface-2: #222c37;
+  --line: #2e3a47;
+  --ink: #e8edf1;
+  --muted: #9aa8b5;
+  --warn: #f0a04b;
+  --danger: #f97066;
+  --ok: #4ccb7f;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-on-brand: var(--on-brand);
+  --color-brand-soft: color-mix(in oklab, var(--brand) 12%, var(--surface));
+  --color-brand-ink: color-mix(in oklab, var(--brand) 78%, var(--ink));
+  --color-warn: var(--warn);
+  --color-warn-soft: color-mix(in oklab, var(--warn) 14%, var(--surface));
+  --color-danger: var(--danger);
+  --color-danger-soft: color-mix(in oklab, var(--danger) 12%, var(--surface));
+  --color-ok: var(--ok);
+  --color-ok-soft: color-mix(in oklab, var(--ok) 14%, var(--surface));
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), var(--font-body), ui-sans-serif, sans-serif;
+  --radius-control: 10px;
+  --radius-card: 16px;
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+  }
+  body {
+    @apply bg-bg font-sans text-[15px] leading-relaxed text-ink antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  /* Foco visible y consistente para navegación con teclado (WCAG 2.4.7). */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand) 25%, transparent);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes window-on {
+  from {
+    opacity: 0.15;
+  }
+}
+
+@utility skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--line) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+@utility animate-rise {
+  animation: rise 0.25s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
